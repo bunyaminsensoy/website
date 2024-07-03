@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Giriş Yap</title>
+    <style>
+        #login-form, #image-page {
+            display: none;
+        }
+        #login-form.active, #image-page.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="login-form" class="active">
+        <h2>Giriş Yap</h2>
+        <form onsubmit="return login(event)">
+            <label for="username">Kullanıcı Adı:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Şifre:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Giriş Yap</button>
+        </form>
+        <p id="error-message" style="color: red;"></p>
+    </div>
+
+    <div id="image-page">
+        <h2>Resim Sayfası</h2>
+        <p>Hoş geldiniz, <span id="user-name"></span>!</p>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Eugene_Ferdinand_Victor_Delacroix_Attila_fragment_%28cropped%29.jpg/640px-Eugene_Ferdinand_Victor_Delacroix_Attila_fragment_%28cropped%29.jpg" alt="örnek resim">
+        <br>
+        <button onclick="logout()">Çıkış Yap</button>
+    </div>
+
+    <script>
+        const users = {
+            "adem": "elma"
+        };
+
+        function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (users[username] && users[username] === password) {
+                document.getElementById('user-name').textContent = username;
+                document.getElementById('login-form').classList.remove('active');
+                document.getElementById('image-page').classList.add('active');
+            } else {
+                document.getElementById('error-message').textContent = "Kullanıcı adı veya şifre hatalı";
+            }
+        }
+
+        function logout() {
+            document.getElementById('login-form').classList.add('active');
+            document.getElementById('image-page').classList.remove('active');
+            document.getElementById('error-message').textContent = "";
+            document.getElementById('username').value = "";
+            document.getElementById('password').value = "";
+        }
+    </script>
+</body>
+</html>
