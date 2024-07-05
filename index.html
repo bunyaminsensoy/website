@@ -3,12 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Giriş Yap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        body {
+            background-image: url('https://www.polismalzemeleri.com/uploads/productsOptimized/1000-1400/20180305/polis-egm-mudur-3-boyutlu-armas-pvc-plastik-egm-2996_1.jpg'); /* Arka plan resminizin URL'si */
+            background-size: cover; /* Resmin tüm sayfayı kaplaması için */
+            background-repeat: no-repeat; /* Resmin tekrar etmemesi için */
+            background-position: center; /* Resmin ortalanması için */
+            font-family: Arial, sans-serif; /* Genel font stili */
+            color: white; /* Yazı rengini beyaz yaparak kontrast oluşturma */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
         #login-form, #image-page {
             display: none;
+            background: rgba(0, 0, 0, 0.7); /* Saydam arka plan ekleme */
+            padding: 20px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            width: 90%;
+            max-width: 400px;
         }
         #login-form.active, #image-page.active {
             display: block;
+        }
+        h2 {
+            text-align: center;
+        }
+        label, input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #0066cc;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #005bb5;
+        }
+        img {
+            width: 100%; /* Resmin genişletilmesi */
+            height: auto; /* Yüksekliğin otomatik ayarlanması */
+            border-radius: 10px; /* Resme köşe yuvarlaması ekleyin */
+            margin-top: 10px;
+            cursor: pointer; /* Resim üzerine geldiğinde işaretçi değişir */
+            max-width: 100%;
+            height: auto;
+            object-fit: contain; /* Resmin boyutunu korumak için */
         }
     </style>
 </head>
@@ -30,7 +82,9 @@
     <div id="image-page">
         <h2>Resim Sayfası</h2>
         <p>Hoş geldiniz, <span id="user-name"></span>!</p>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Eugene_Ferdinand_Victor_Delacroix_Attila_fragment_%28cropped%29.jpg/640px-Eugene_Ferdinand_Victor_Delacroix_Attila_fragment_%28cropped%29.jpg" alt="örnek resim">
+        <div id="image-container">
+            <img id="full-screen-image" src="https://upload.wikimedia.org/wikipedia/commons/5/50/Atala_au_tombeau_-_Anne-Louis_Girodet_-_Mus%C3%A9e_du_Louvre_Peintures_INV_4958.jpg" alt="örnek resim">
+        </div>
         <br>
         <button onclick="logout()">Çıkış Yap</button>
     </div>
@@ -60,6 +114,58 @@
             document.getElementById('username').value = "";
             document.getElementById('password').value = "";
         }
+
+        document.getElementById('full-screen-image').addEventListener('click', function() {
+            if (this.requestFullscreen) {
+                this.requestFullscreen();
+            } else if (this.mozRequestFullScreen) { /* Firefox */
+                this.mozRequestFullScreen();
+            } else if (this.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                this.webkitRequestFullscreen();
+            } else if (this.msRequestFullscreen) { /* IE/Edge */
+                this.msRequestFullscreen();
+            }
+        });
+
+        // Pinch-to-Zoom İşlevselliği
+        const imageContainer = document.getElementById('image-container');
+        let initialScale = 1;
+        let scale = 1;
+        let startDistance = 0;
+
+        function getDistance(touches) {
+            const [touch1, touch2] = touches;
+            return Math.sqrt(
+                Math.pow(touch2.pageX - touch1.pageX, 2) +
+                Math.pow(touch2.pageY - touch1.pageY, 2)
+            );
+        }
+
+        let lastScale = 1;
+
+        imageContainer.addEventListener('touchstart', (event) => {
+            if (event.touches.length === 2) {
+                startDistance = getDistance(event.touches);
+                initialScale = scale;
+            }
+        });
+
+        imageContainer.addEventListener('touchmove', (event) => {
+            if (event.touches.length === 2) {
+                const currentDistance = getDistance(event.touches);
+                scale = initialScale * (currentDistance / startDistance);
+                if (scale < 1) scale = 1; // Minimum ölçeklendirme
+                imageContainer.style.transform = `scale(${scale})`;
+                event.preventDefault();
+            }
+        });
+
+        imageContainer.addEventListener('touchend', (event) => {
+            if (event.touches.length < 2) {
+                startDistance = 0;
+                initialScale = scale;
+            }
+        });
     </script>
 </body>
 </html>
